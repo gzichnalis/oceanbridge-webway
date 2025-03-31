@@ -1,5 +1,5 @@
 
-import { Wrench, Cog, PuzzlePiece } from 'lucide-react';
+import { Wrench, Cog, Puzzle } from 'lucide-react';
 
 const Services = () => {
   const serviceCategories = [
@@ -28,7 +28,7 @@ const Services = () => {
       bgColor: "bg-gradient-to-br from-cyan-50 to-cyan-100"
     },
     {
-      icon: <PuzzlePiece className="h-12 w-12 service-icon" />,
+      icon: <Puzzle className="h-12 w-12 service-icon" />,
       title: "Spare Parts",
       items: [
         "Genuine and OEM parts sourcing",
