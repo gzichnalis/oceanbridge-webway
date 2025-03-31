@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { MapPin, Mail, Globe, Phone } from 'lucide-react';
+import emailjs from 'emailjs-com';
 
 const Contact = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,18 +20,48 @@ const Contact = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you as soon as possible.",
-    });
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      message: '',
-    });
+    setIsSubmitting(true);
+    
+    try {
+      // Replace these with your actual EmailJS service, template and user IDs
+      const templateParams = {
+        from_name: formData.name,
+        reply_to: formData.email,
+        company: formData.company,
+        message: formData.message,
+      };
+      
+      await emailjs.send(
+        'YOUR_SERVICE_ID', 
+        'YOUR_TEMPLATE_ID',
+        templateParams,
+        'YOUR_USER_ID'
+      );
+      
+      toast({
+        title: "Message Sent!",
+        description: "We'll get back to you as soon as possible.",
+      });
+      
+      // Reset the form
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      toast({
+        title: "Message Failed to Send",
+        description: "There was an error sending your message. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -117,8 +149,12 @@ const Contact = () => {
                 ></textarea>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button type="submit" className="bg-ocean-600 hover:bg-ocean-700 flex-1">
-                  Send Message
+                <Button 
+                  type="submit" 
+                  className="bg-ocean-600 hover:bg-ocean-700 flex-1"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
                 <Button type="button" variant="outline" className="border-ocean-600 text-ocean-600 hover:bg-ocean-50 flex-1">
                   Request a Callback
